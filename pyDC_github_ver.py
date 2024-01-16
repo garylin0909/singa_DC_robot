@@ -2,6 +2,11 @@
 import discord
 import time
 import asyncio
+import os
+import keep_alive
+
+#初始化token
+my_secret = os.environ['robot_token']
 
 #初始化存訊息的list
 tmp=[' ']*10000
@@ -22,7 +27,7 @@ client = discord.Client(intents=intents)
 async def on_ready():
     print('目前登入身份：',client.user)
     asyncio.create_task(main())
-    
+
 #調用event函式庫
 @client.event
 
@@ -43,8 +48,9 @@ async def on_message(message):
         await message.add_reaction('👍')
         #await message.channel.send(f"<@%s>成功！"%message.author.id)
         for i in range (3):
-            tmp[i+4*times]=temp[i]
-        tmp[3+4*times]=message.author.id
+            tmp[i+5*times]=temp[i]
+        tmp[3+5*times]=message.author.id
+        tmp[4+5*times]=message.channel.id
         times+=1
 #發訊息的main
 async def main():
@@ -53,12 +59,13 @@ async def main():
         #print("運行中...times=",times)
         if int(time.strftime("%S",time.localtime()))==0:
             for i in range(times+1):
-                if(tmp[i*4+1]==time.strftime("%H:%M",time.localtime())):
+                if(tmp[i*5+1]==time.strftime("%H:%M",time.localtime())):
                     #底下記得改頻道ID
-                    await client.get_channel({你的頻道ID}).send("<@%s>"%tmp[i*4+3]+tmp[i*4+2])
-                    tmp[i*4+2]=""
+                  await client.get_channel(int(tmp[i*5+4])).send("<@%s>"%tmp[i*5+3]+tmp[i*5+2])
+                  tmp[i*5+2]=""
                     #await asyncio.sleep(60-int(time.strftime("%S",time.localtime())))
         await asyncio.sleep(1)
 
-#身分
-client.run('{你的偷肯}') #TOKEN
+#身分/持續運行
+keep_alive.keep_alive()
+client.run('%s'%my_secret) #TOKEN
