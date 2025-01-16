@@ -6,7 +6,7 @@ import os
 import keep_alive
 
 #初始化token
-my_secret = os.environ['robot_token']
+my_secret = os.environ['token']
 
 #初始化存訊息的list
 tmp=[' ']*10000
